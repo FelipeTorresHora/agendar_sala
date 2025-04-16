@@ -8,33 +8,59 @@
             background-color: #f5f5f5;
             color: #333;
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
             margin: 0;
+            padding: 20px;
         }
-        .container {
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .logout {
+            text-decoration: none;
+            color: #7f8c8d;
+            font-size: 14px;
+            padding: 8px 15px;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .logout:hover {
+            background-color: #e9ecef;
+            color: #34495e;
+        }
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .panel {
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 40px;
-            width: 100%;
-            max-width: 500px;
+            padding: 25px;
+            flex: 1;
+            min-width: 300px;
         }
-        h1 {
+        h1, h2 {
             color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
+            margin-top: 0;
+            margin-bottom: 20px;
         }
         label {
             display: block;
-            margin: 15px 0 5px;
+            margin: 12px 0 5px;
             font-weight: bold;
         }
         input, select {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             margin: 5px 0 15px;
             box-sizing: border-box;
             border: 1px solid #ddd;
@@ -49,7 +75,7 @@
             cursor: pointer;
             border-radius: 4px;
             font-size: 16px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         button:hover {
             background-color: #2980b9;
@@ -62,26 +88,46 @@
             margin-bottom: 20px;
             text-align: center;
         }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        table {
             width: 100%;
-            max-width: 500px;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .search-form {
             margin-bottom: 20px;
         }
-        .logout {
-            text-decoration: none;
+        .search-row {
+            display: flex;
+            gap: 10px;
+        }
+        .search-row select {
+            flex-grow: 1;
+        }
+        .search-row button {
+            width: auto;
+            margin-top: 5px;
+        }
+        .no-results {
+            text-align: center;
+            padding: 20px;
             color: #7f8c8d;
-            font-size: 14px;
         }
-        .logout:hover {
-            color: #34495e;
-        }
-        .logo {
-            font-size: 18px;
-            font-weight: bold;
-            color: #3498db;
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -91,48 +137,105 @@
         <a href="{% url 'logout' %}" class="logout">Sair</a>
     </div>
     
-    <div class="container">
-        <h1>Agendar Sala de Reunião</h1>
+    <div class="main-container">
+        <!-- Left Panel - Booking Form -->
+        <div class="panel">
+            <h1>Agendar Sala de Reunião</h1>
+            
+            {% if success %}
+                <div class="success">Sala agendada com sucesso!</div>
+            {% endif %}
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <label for="date">Data:</label>
+                <input type="date" id="date" name="date" required>
+                
+                <label for="time">Horário:</label>
+                <input type="time" id="time" name="time" required>
+                
+                <label for="duration">Duração:</label>
+                <select id="duration" name="duration">
+                    <option>1 hora</option>
+                    <option>2 horas</option>
+                    <option>3 horas</option>
+                    <option>4 horas</option>
+                </select>
+                
+                <label for="room">Sala:</label>
+                <select id="room" name="room">
+                    <option>Sala A1 - 1º Andar</option>
+                    <option>Sala A2 - 1º Andar</option>
+                    <option>Sala A3 - 1º Andar</option>
+                    <option>Sala A4 - 1º Andar</option>
+                    <option>Sala B1 - 2º Andar</option>
+                    <option>Sala B2 - 2º Andar</option>
+                    <option>Sala B3 - 2º Andar</option>
+                    <option>Sala B4 - 2º Andar</option>
+                    <option>Sala C1 - 3º Andar</option>
+                    <option>Sala C2 - 3º Andar</option>
+                    <option>Sala C3 - 3º Andar</option>
+                    <option>Sala C4 - 3º Andar</option>
+                </select>
+                
+                <button type="submit">Agendar</button>
+            </form>
+        </div>
         
-        {% if success %}
-            <div class="success">Sala agendada com sucesso!</div>
-        {% endif %}
-        
-        <form method="post">
-            {% csrf_token %}
+        <!-- Right Panel - Search and Results -->
+        <div class="panel">
+            <h2>Buscar Agendamentos</h2>
             
-            <label for="date">Data:</label>
-            <input type="date" id="date" name="date" required>
+            <form method="post" class="search-form">
+                {% csrf_token %}
+                <div class="search-row">
+                    <select name="search_room">
+                        <option value="all" {% if searched_room == 'all' %}selected{% endif %}>Todas as Salas</option>
+                        <option value="Sala A1 - 1º Andar" {% if searched_room == 'Sala A1 - 1º Andar' %}selected{% endif %}>Sala A1 - 1º Andar</option>
+                        <option value="Sala A2 - 1º Andar" {% if searched_room == 'Sala A2 - 1º Andar' %}selected{% endif %}>Sala A2 - 1º Andar</option>
+                        <option value="Sala A3 - 1º Andar" {% if searched_room == 'Sala A3 - 1º Andar' %}selected{% endif %}>Sala A3 - 1º Andar</option>
+                        <option value="Sala A4 - 1º Andar" {% if searched_room == 'Sala A4 - 1º Andar' %}selected{% endif %}>Sala A4 - 1º Andar</option>
+                        <option value="Sala B1 - 2º Andar" {% if searched_room == 'Sala B1 - 2º Andar' %}selected{% endif %}>Sala B1 - 2º Andar</option>
+                        <option value="Sala B2 - 2º Andar" {% if searched_room == 'Sala B2 - 2º Andar' %}selected{% endif %}>Sala B2 - 2º Andar</option>
+                        <option value="Sala B3 - 2º Andar" {% if searched_room == 'Sala B3 - 2º Andar' %}selected{% endif %}>Sala B3 - 2º Andar</option>
+                        <option value="Sala B4 - 2º Andar" {% if searched_room == 'Sala B4 - 2º Andar' %}selected{% endif %}>Sala B4 - 2º Andar</option>
+                        <option value="Sala C1 - 3º Andar" {% if searched_room == 'Sala C1 - 3º Andar' %}selected{% endif %}>Sala C1 - 3º Andar</option>
+                        <option value="Sala C2 - 3º Andar" {% if searched_room == 'Sala C2 - 3º Andar' %}selected{% endif %}>Sala C2 - 3º Andar</option>
+                        <option value="Sala C3 - 3º Andar" {% if searched_room == 'Sala C3 - 3º Andar' %}selected{% endif %}>Sala C3 - 3º Andar</option>
+                        <option value="Sala C4 - 3º Andar" {% if searched_room == 'Sala C4 - 3º Andar' %}selected{% endif %}>Sala C4 - 3º Andar</option>
+                    </select>
+                    <button type="submit">Buscar</button>
+                </div>
+            </form>
             
-            <label for="time">Horário:</label>
-            <input type="time" id="time" name="time" required>
-            
-            <label for="duration">Duração:</label>
-            <select id="duration" name="duration">
-                <option>1 hora</option>
-                <option>2 horas</option>
-                <option>3 horas</option>
-                <option>4 horas</option>
-            </select>
-            
-            <label for="room">Sala:</label>
-            <select id="room" name="room">
-                <option>Sala A1 - 1º Andar</option>
-                <option>Sala A2 - 1º Andar</option>
-                <option>Sala A3 - 1º Andar</option>
-                <option>Sala A4 - 1º Andar</option>
-                <option>Sala B1 - 2º Andar</option>
-                <option>Sala B2 - 2º Andar</option>
-                <option>Sala B3 - 2º Andar</option>
-                <option>Sala B4 - 2º Andar</option>
-                <option>Sala C1 - 3º Andar</option>
-                <option>Sala C2 - 3º Andar</option>
-                <option>Sala C3 - 3º Andar</option>
-                <option>Sala C4 - 3º Andar</option>
-            </select>
-            
-            <button type="submit">Agendar</button>
-        </form>
+            {% if bookings %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sala</th>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Duração</th>
+                            <th>Usuário</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>{{ booking.room }}</td>
+                            <td>{{ booking.date }}</td>
+                            <td>{{ booking.time }}</td>
+                            <td>{{ booking.duration }}</td>
+                            <td>{{ booking.user }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="no-results">Nenhum agendamento encontrado</div>
+            {% endif %}
+        </div>
     </div>
 </body>
 </html>

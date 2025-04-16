@@ -1,4 +1,4 @@
-
+# scheduling/views.py
 from django.shortcuts import render, redirect
 import uuid
 
@@ -40,26 +40,45 @@ def schedule_view(request):
     user = SESSIONS[session_id]['user']
     
     if request.method == 'POST':
-        # Store booking information
-        booking = {
-            'user': user,
-            'date': request.POST.get('date'),
-            'time': request.POST.get('time'),
-            'duration': request.POST.get('duration'),
-            'room': request.POST.get('room'),
-        }
-        
-        booking_id = str(uuid.uuid4())
-        BOOKINGS[booking_id] = booking
-        
-        # Store booking reference in session
-        if 'bookings' not in SESSIONS[session_id]:
-            SESSIONS[session_id]['bookings'] = []
-        SESSIONS[session_id]['bookings'].append(booking_id)
-        
-        return render(request, 'agenda.html', {'success': True})
+        # Check if this is a search request
+        if 'search_room' in request.POST:
+            searched_room = request.POST.get('search_room')
+            # Filter bookings by room
+            filtered_bookings = [booking for booking_id, booking in BOOKINGS.items() 
+                                if searched_room == 'all' or booking['room'] == searched_room]
+            
+            context = {
+                'searched_room': searched_room,
+                'bookings': filtered_bookings
+            }
+            return render(request, 'agenda.html', context)
+        else:
+            # This is a booking request
+            booking = {
+                'user': user,
+                'date': request.POST.get('date'),
+                'time': request.POST.get('time'),
+                'duration': request.POST.get('duration'),
+                'room': request.POST.get('room'),
+            }
+            
+            booking_id = str(uuid.uuid4())
+            BOOKINGS[booking_id] = booking
+            
+            # Store booking reference in session
+            if 'bookings' not in SESSIONS[session_id]:
+                SESSIONS[session_id]['bookings'] = []
+            SESSIONS[session_id]['bookings'].append(booking_id)
+            
+            # Get all bookings for display
+            all_bookings = list(BOOKINGS.values())
+            
+            return render(request, 'agenda.html', {'success': True, 'bookings': all_bookings})
     
-    return render(request, 'agenda.html')
+    # Get all bookings for display
+    all_bookings = list(BOOKINGS.values())
+    
+    return render(request, 'agenda.html', {'bookings': all_bookings})
 
 
 def logout_view(request):
