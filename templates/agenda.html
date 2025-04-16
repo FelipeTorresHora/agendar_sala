@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agendamento - Sistema de Agendamento de Salas Corporativas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0 15px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+        .logout {
+            text-decoration: none;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .logout:hover {
+            color: #34495e;
+        }
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">WorkHub Corp</div>
+        <a href="{% url 'logout' %}" class="logout">Sair</a>
+    </div>
+    
+    <div class="container">
+        <h1>Agendar Sala de Reunião</h1>
+        
+        {% if success %}
+            <div class="success">Sala agendada com sucesso!</div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <label for="date">Data:</label>
+            <input type="date" id="date" name="date" required>
+            
+            <label for="time">Horário:</label>
+            <input type="time" id="time" name="time" required>
+            
+            <label for="duration">Duração:</label>
+            <select id="duration" name="duration">
+                <option>1 hora</option>
+                <option>2 horas</option>
+                <option>3 horas</option>
+                <option>4 horas</option>
+            </select>
+            
+            <label for="room">Sala:</label>
+            <select id="room" name="room">
+                <option>Sala A1 - 1º Andar</option>
+                <option>Sala A2 - 1º Andar</option>
+                <option>Sala A3 - 1º Andar</option>
+                <option>Sala A4 - 1º Andar</option>
+                <option>Sala B1 - 2º Andar</option>
+                <option>Sala B2 - 2º Andar</option>
+                <option>Sala B3 - 2º Andar</option>
+                <option>Sala B4 - 2º Andar</option>
+                <option>Sala C1 - 3º Andar</option>
+                <option>Sala C2 - 3º Andar</option>
+                <option>Sala C3 - 3º Andar</option>
+                <option>Sala C4 - 3º Andar</option>
+            </select>
+            
+            <button type="submit">Agendar</button>
+        </form>
+    </div>
+</body>
+</html>
